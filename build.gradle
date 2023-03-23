@@ -1,0 +1,80 @@
+buildscript {
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath group: 'net.sf.saxon', name: 'Saxon-HE', version: "12.1"
+  }
+}
+
+plugins {
+  id 'com.nwalsh.gradle.saxon.saxon-gradle' version '0.10.2'
+}
+
+import com.nwalsh.gradle.saxon.SaxonXsltTask
+
+task hello(type: SaxonXsltTask) {
+  stylesheet "${projectDir}/tools/hello.xsl"
+  output "${buildDir}/docs/hello.xml"
+  args(['-it'])
+}
+
+/*
+In the real build, I iterate over a bunch of input files
+to create some setup and testing tasks. For some files,
+I also iterate over some configuration options and generate
+a set of additional tests. The whole thing runs to a couple
+thousand lines and clutters up the build script.
+
+fileTree(dir: "${projectDir}/src/test/resources/xml",
+         include: "*.xml",
+         exclude: ["exculud-me.xml"]).each { xml ->
+  // Work out the base filename of the test
+  def base = xml.toString()
+  def pos = base.indexOf("/resources/xml/")
+  if (pos > 0) {
+    base = base.substring(pos+15)
+      .replace("/", "_")
+      .replace(".xml", "")
+  }
+
+  task "validate-${base}"(...) { ... }
+  task "${base}.html"(...) { ... }
+  task "${base}.expected"(...) { ... }
+  task "${base}.pdf"(...) { ... }
+
+  ['config1', 'config2'].each { config ->
+    if (base == "something.xml") {
+      ['foo', 'bar', 'baz'].each {
+        Task t1 = task "prefix-${base}-${config}.setup"(type: SaxonXsltTask) {
+          ...
+        }
+        Task t2 = task "prefix-${base}-${config}.test"(type: SaxonXsltTask) {
+          ...
+        }
+      }
+    }
+    ...
+  }
+}
+
+Reading about how to modularize Gradle builds often leads
+to the suggestion, "use plugins"
+*/
+
+import modtest.MyPlugin
+
+project.extensions.create("myPlugin", MyPlugin, project)
+
+myPlugin.toyNumberedFrom("spoon", ["foo", "bar", "baz"]);
+
+task goodbye(type: SaxonXsltTask, dependsOn: ["check-spoon-bar-driver"]) {
+  stylesheet "${projectDir}/tools/hello.xsl"
+  output "${buildDir}/docs/goodbye.xml"
+  args(['-it'])
+  parameters([
+    'message': 'Goodbye, cruel world.'
+  ])
+}
