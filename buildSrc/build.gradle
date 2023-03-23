@@ -1,0 +1,17 @@
+buildscript {
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath group: 'net.sf.saxon', name: 'Saxon-HE', version: "12.1"
+  }
+}
+
+plugins {
+  id 'com.nwalsh.gradle.saxon.saxon-gradle' version '0.10.2'
+}
+
+import com.nwalsh.gradle.saxon.SaxonXsltTask
+

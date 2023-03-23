@@ -3,6 +3,8 @@ package modtest
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+import com.nwalsh.gradle.saxon.SaxonXsltTask
+
 class MyPlugin {
   final Project project
 
